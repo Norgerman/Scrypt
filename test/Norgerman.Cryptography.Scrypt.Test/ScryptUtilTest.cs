@@ -7,7 +7,7 @@ namespace Norgerman.Cryptography.Scrypt.Test
     public class ScryptUtilTest
     {
         [Fact]
-        public void Scrypt_Result_Empty_Empty_16_1_1_Test()
+        public void Scrypt_Result_empty_empty_16_1_1_Test()
         {
             string password;
             byte[] salt;
@@ -27,7 +27,7 @@ namespace Norgerman.Cryptography.Scrypt.Test
         }
 
         [Fact]
-        public void Scrypt_Result_Password_NaCl_1024_8_16_Test()
+        public void Scrypt_Result_password_NaCl_1024_8_16_Test()
         {
             string password;
             byte[] salt;
