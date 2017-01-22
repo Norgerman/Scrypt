@@ -1,9 +1,10 @@
-﻿<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" />
-  
+﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
+
   <PropertyGroup>
     <TargetFrameworks>netcoreapp1.0</TargetFrameworks>
+    <RuntimeIdentifiers>win7-x64;win7-x86;osx.10.10-x64;osx.10.11-x64;ubuntu.14.04-x64;ubuntu.16.04-x64;centos.7-x64;rhel.7.2-x64;debian.8-x64;fedora.23-x64;opensuse.13.2-x64</RuntimeIdentifiers>
     <WarningsAsErrors>true</WarningsAsErrors>
+	  <OutputType>Exe</OutputType>
     <AssemblyName>Norgerman.Cryptography.Scrypt.Test</AssemblyName>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
@@ -18,23 +19,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../src/Norgerman.Cryptography.Scrypt/Norgerman.Cryptography.Scrypt.csproj" />
+    <ProjectReference Include="..\..\src\Norgerman.Cryptography.Scrypt\Norgerman.Cryptography.Scrypt.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Sdk">
-      <Version>1.0.0-alpha-20161104-2</Version>
-      <PrivateAssets>All</PrivateAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.NET.Test.Sdk">
       <Version>15.0.0-preview-20161216-01</Version>
     </PackageReference>
     <PackageReference Include="xunit.runner.visualstudio">
-        <Version>2.2.0-beta4-build1194</Version>
+      <Version>2.2.0-beta4-build1194</Version>
     </PackageReference>
     <PackageReference Include="xunit">
       <Version>2.2.0-beta4-build3444</Version>
-    </PackageReference>
+      </PackageReference>
     <PackageReference Include="dotnet-test-xunit">
       <Version>2.2.0-preview2-build1029</Version>
     </PackageReference>
@@ -49,6 +46,5 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <DefineConstants>$(DefineConstants);RELEASE</DefineConstants>
   </PropertyGroup>
-  
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
 </Project>
