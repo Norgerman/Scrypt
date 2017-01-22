@@ -32,3 +32,4 @@ nuget.exe
 *.ipch
 .settings
 *.sln.ide
+.vscode/
