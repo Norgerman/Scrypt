@@ -1,0 +1,27 @@
+image: Visual Studio 2017
+environment:
+
+platform: 
+  - x64
+
+clone_depth: 3
+
+install:
+  - ps: cd src\Norgerman.Cryptography.Scrypt && dotnet restore
+  - ps: cd test\Norgerman.Cryptography.Scrypt.test && dotnet restore
+
+build_script:
+  - ps: .\build.ps1
+
+artifacts:
+  - path: src\Norgerman.Cryptography.Scrypt\bin\Release\*.nupkg
+    name: Norgerman.Cryptography.Scrypt
+test:
+  - ps: cd test\Norgerman.Cryptography.Scrypt.test && dotnet test
+    
+deploy:
+  provider: NuGet
+  api_key:
+    secure: RibWaT8a9QpArRhQVG/Ibr6fx3/UubrxnrRre8QSJPvt0pLhuoDJe6/GJX4lyi2S
+  skip_symbols: false
+  artifact: /.*\.nupkg/
