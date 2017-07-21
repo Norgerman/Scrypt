@@ -1,3 +1,4 @@
 cd test\Norgerman.Cryptography.Scrypt.Test
-dotnet resore
+dotnet restore
 dotnet test
+cd ..\..\

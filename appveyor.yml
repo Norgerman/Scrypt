@@ -1,7 +1,7 @@
 image: Visual Studio 2017
 
 platform: 
-  - x64
+  - Any Cpu
 
 clone_depth: 3
 
@@ -10,7 +10,7 @@ build_script:
   - ps: .\test.ps1
 
 artifacts:
-  - path: src\Norgerman.Cryptography.Scrypt\bin\Release\*.nupkg
+  - path: src\Norgerman.Cryptography.Scrypt\bin\**\*.nupkg
     name: Norgerman.Cryptography.Scrypt
     
 test: off

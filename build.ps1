@@ -3,3 +3,4 @@ dotnet restore
 dotnet build
 dotnet build -c Release
 dotnet pack -c Release
+cd ..\..\
