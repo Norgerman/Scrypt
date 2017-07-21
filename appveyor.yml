@@ -5,18 +5,15 @@ platform:
 
 clone_depth: 3
 
-install:
-  - ps: cd src\Norgerman.Cryptography.Scrypt && dotnet restore
-  - ps: cd test\Norgerman.Cryptography.Scrypt.test && dotnet restore
-
 build_script:
   - ps: .\build.ps1
+  - ps: .\test.ps1
 
 artifacts:
   - path: src\Norgerman.Cryptography.Scrypt\bin\Release\*.nupkg
     name: Norgerman.Cryptography.Scrypt
-test:
-  - ps: cd test\Norgerman.Cryptography.Scrypt.test && dotnet test
+    
+test: off
     
 deploy:
   provider: NuGet
