@@ -2,8 +2,14 @@
   
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
+    <PackageVersion>1.0.1</PackageVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <AssemblyName>Norgerman.Cryptography.Scrypt</AssemblyName>
+    <PackageId>Norgerman.Cryptography.Scrypt</PackageId>
+    <Authors>Norgerman</Authors>
+    <Description>Scrypt implementation for dotnet core</Description>
+    <PackageTags>Cryptography Scrypt</PackageTags>
+    <Copyright>Copyright 2017 (c) Norgerman.</Copyright>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
