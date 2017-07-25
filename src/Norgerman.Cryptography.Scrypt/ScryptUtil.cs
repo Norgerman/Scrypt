@@ -95,7 +95,7 @@ namespace Norgerman.Cryptography.Scrypt
             fixed (byte* bptr = B)
             {
                 uint* uptr = (uint*)bptr;
-                uint[] x = new uint[16];
+                uint* x =  stackalloc uint[16];
                 for (int i = 0; i < 16; i++)
                 {
                     x[i] = uptr[i];
