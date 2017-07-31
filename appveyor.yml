@@ -3,12 +3,12 @@ image: Visual Studio 2017
 clone_depth: 3
 
 install:
-  - dotnet restore
+ - dotnet restore
 
 build_script:
   - ps: .\build.ps1
 
- test_script:
+test_script:
   - ps: .\test.ps1
   
 artifacts:
