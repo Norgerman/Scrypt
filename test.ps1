@@ -1,4 +1,1 @@
-cd test\Norgerman.Cryptography.Scrypt.Test
-dotnet restore
-dotnet test
-cd ..\..\
+dotnet test test\Norgerman.Cryptography.Scrypt.Test\Norgerman.Cryptography.Scrypt.Test.csproj

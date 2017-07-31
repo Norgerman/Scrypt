@@ -1,6 +1,3 @@
-cd src\Norgerman.Cryptography.Scrypt
-dotnet restore
-dotnet build
-dotnet build -c Release
-dotnet pack -c Release
-cd ..\..\
+dotnet build src\Norgerman.Cryptography.Scrypt
+dotnet build -c Release src\Norgerman.Cryptography.Scrypt
+dotnet pack -c Release src\Norgerman.Cryptography.Scrypt
