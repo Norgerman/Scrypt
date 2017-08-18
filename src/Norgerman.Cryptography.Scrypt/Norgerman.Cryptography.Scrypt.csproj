@@ -13,6 +13,12 @@
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <PackageProjectUrl>https://github.com/Norgerman/Scrypt</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/Norgerman/Scrypt/blob/master/LICENSE</PackageLicenseUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/Norgerman/Scrypt</RepositoryUrl>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\scrypt.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>

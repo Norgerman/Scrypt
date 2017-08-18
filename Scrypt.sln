@@ -1,13 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.4
+VisualStudioVersion = 15.0.26730.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D18EBCAA-CAFD-42B2-919A-EAC797B41503}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B4341748-8383-4035-A756-4A1CAE44FA36}"
 	ProjectSection(SolutionItems) = preProject
 		global.json = global.json
+		scrypt.snk = scrypt.snk
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Norgerman.Cryptography.Scrypt", "src\Norgerman.Cryptography.Scrypt\Norgerman.Cryptography.Scrypt.csproj", "{653ED6BF-FF0F-438B-86DA-56528B7AC324}"
@@ -37,5 +38,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{653ED6BF-FF0F-438B-86DA-56528B7AC324} = {D18EBCAA-CAFD-42B2-919A-EAC797B41503}
 		{C9380E4F-2130-4DDF-8A21-775752897BD8} = {2A0094FB-2483-4915-A846-FF253044F03C}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7E562970-E62B-40FD-A282-A16EE09BDAFD}
 	EndGlobalSection
 EndGlobal
