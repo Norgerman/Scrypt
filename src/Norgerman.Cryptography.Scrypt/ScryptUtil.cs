@@ -1,17 +1,17 @@
-﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
-using System;
+﻿using System;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Norgerman.Cryptography.Scrypt
 {
     public static class ScryptUtil
     {
-        public static byte[] Scrypt(byte[] password, byte[] salt, int N, int r, int p, int dkLen)
+        public static byte[] Scrypt(string password, byte[] salt, int N, int r, int p, int dkLen)
         {
-            return Scrypt(Encoding.UTF8.GetString(password), salt, N, r, p, dkLen);
+            return Scrypt(Encoding.UTF8.GetBytes(password), salt, N, r, p, dkLen);
         }
 
-        public static byte[] Scrypt(string password, byte[] salt, int N, int r, int p, int dkLen)
+        public static byte[] Scrypt(byte[] password, byte[] salt, int N, int r, int p, int dkLen)
         {
             if (N < 2 || (N & (N - 1)) != 0) throw new ArgumentException("N must be a power of 2 greater than 1", nameof(N));
 
@@ -24,16 +24,75 @@ namespace Norgerman.Cryptography.Scrypt
             byte[] XY = new byte[256 * r];
             byte[] V = new byte[128 * r * N];
             int i;
-
-            B = KeyDerivation.Pbkdf2(password, salt, KeyDerivationPrf.HMACSHA256, 1, p * 128 * r);
-
-            for (i = 0; i < p; i++)
+            using (var mac = new HMACSHA256(password))
             {
-                Smix(B, i * 128 * r, r, N, V, XY);
+                B = PBKDF2_SHA256(mac, password, salt, 1, p * 128 * r);
+
+                for (i = 0; i < p; i++)
+                {
+                    Smix(B, i * 128 * r, r, N, V, XY);
+                }
+
+                DK = PBKDF2_SHA256(mac, password, B, 1, dkLen);
             }
 
-            DK = KeyDerivation.Pbkdf2(password, B, KeyDerivationPrf.HMACSHA256, 1, dkLen);
             return DK;
+        }
+
+        /// <summary>
+        /// Compute PBKDF2 using HMAC-SHA256 as the PRF, and write the output to derivedKey.
+        /// reference: https://github.com/viniciuschiele/Scrypt/blob/master/src/Scrypt/ScryptEncoder.cs#L632
+        /// </summary>
+        /// <param name="mac"></param>
+        /// <param name="password"></param>
+        /// <param name="salt"></param>
+        /// <param name="iterationCount"></param>
+        /// <param name="derivedKeyLength"></param>
+        /// <returns></returns>
+        private static byte[] PBKDF2_SHA256(HMACSHA256 mac, byte[] password, byte[] salt, long iterationCount, int derivedKeyLength)
+        {
+            if (derivedKeyLength > (Math.Pow(2, 32) - 1) * 32)
+            {
+                throw new ArgumentException("Requested key length too long");
+            }
+
+            var U = new byte[32];
+            var T = new byte[32];
+            var saltLength = salt.Length;
+            var saltBuffer = new byte[saltLength + 4];
+            var derivedKey = new byte[derivedKeyLength];
+
+            var blockCount = (int)Math.Ceiling((double)derivedKeyLength / 32);
+            var r = derivedKeyLength - (blockCount - 1) * 32;
+
+            Buffer.BlockCopy(salt, 0, saltBuffer, 0, saltLength);
+
+            for (int i = 1; i <= blockCount; i++)
+            {
+                saltBuffer[saltLength + 0] = (byte)(i >> 24);
+                saltBuffer[saltLength + 1] = (byte)(i >> 16);
+                saltBuffer[saltLength + 2] = (byte)(i >> 8);
+                saltBuffer[saltLength + 3] = (byte)(i);
+
+                mac.Initialize();
+                mac.TransformFinalBlock(saltBuffer, 0, saltBuffer.Length);
+                Buffer.BlockCopy(mac.Hash, 0, U, 0, U.Length);
+                Buffer.BlockCopy(U, 0, T, 0, 32);
+
+                for (long j = 1; j < iterationCount; j++)
+                {
+                    mac.TransformFinalBlock(U, 0, U.Length);
+                    Buffer.BlockCopy(mac.Hash, 0, U, 0, U.Length);
+                    for (int k = 0; k < 32; k++)
+                    {
+                        T[k] ^= U[k];
+                    }
+                }
+
+                Buffer.BlockCopy(T, 0, derivedKey, (i - 1) * 32, (i == blockCount ? r : 32));
+            }
+
+            return derivedKey;
         }
 
         private static void Smix(byte[] B, int Bi, int r, int N, byte[] V, byte[] XY)
@@ -90,12 +149,12 @@ namespace Norgerman.Cryptography.Scrypt
             return (a << b) | (a >> (32 - b));
         }
 
-        unsafe private static void Salsa20_8(byte[] B)
+        private static unsafe void Salsa20_8(byte[] B)
         {
             fixed (byte* bptr = B)
             {
                 uint* uptr = (uint*)bptr;
-                uint* x =  stackalloc uint[16];
+                uint* x = stackalloc uint[16];
                 for (int i = 0; i < 16; i++)
                 {
                     x[i] = uptr[i];
@@ -141,7 +200,7 @@ namespace Norgerman.Cryptography.Scrypt
             }
         }
 
-        unsafe private static int Integerify(byte[] B, int Bi, int r)
+        private static unsafe int Integerify(byte[] B, int Bi, int r)
         {
             int n;
             fixed (byte* bptr = B)
