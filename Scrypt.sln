@@ -1,13 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26730.3
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29403.142
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D18EBCAA-CAFD-42B2-919A-EAC797B41503}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B4341748-8383-4035-A756-4A1CAE44FA36}"
 	ProjectSection(SolutionItems) = preProject
 		global.json = global.json
+		NuGet.Config = NuGet.Config
 		scrypt.snk = scrypt.snk
 	EndProjectSection
 EndProject
