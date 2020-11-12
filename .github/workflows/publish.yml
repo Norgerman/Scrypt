@@ -10,7 +10,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@master
-
       - name: Setup dotnet for github
         uses: actions/setup-dotnet@v1
         with:
