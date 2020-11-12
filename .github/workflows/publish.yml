@@ -22,11 +22,11 @@ jobs:
         env:
           NUGET_API_KEY: ${{secrets.NUGET_API_KEY}}
         run: dotnet nuget push src/Norgerman.Cryptography.Scrypt/bin/Release/*.nupkg --skip-duplicate -k ${NUGET_API_KEY}
-      
+
       - name: Setup dotnet for github
         uses: actions/setup-dotnet@v1
         with:
-          source-url: https://nuget.pkg.github.com/okawali/index.json
+          source-url: https://nuget.pkg.github.com/Norgerman/index.json
         env:
           NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
       - run: dotnet nuget push src/Norgerman.Cryptography.Scrypt/bin/Release/*.nupkg --skip-duplicate
