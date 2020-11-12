@@ -10,7 +10,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@master
-      - name: Setup dotnet for github
+      - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '5.0.x'
@@ -22,15 +22,16 @@ jobs:
 
   publish-nuget:
     runs-on: ubuntu-latest
-    steps:
+    setps:
       - name: Checkout code
         uses: actions/checkout@master
-      - name: Setup dotnet for nuget
+      - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '5.0.x'
           source-url: https://api.nuget.org/v3/index.json
-      - run: dotnet pack -c Release src/Norgerman.Cryptography.Scrypt
+        env:
+          NUGET_AUTH_TOKEN: ${{secrets.NUGET_API_KEY}}
       - shell: bash
         env:
           NUGET_API_KEY: ${{secrets.NUGET_API_KEY}}
