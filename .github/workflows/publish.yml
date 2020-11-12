@@ -16,9 +16,9 @@ jobs:
           dotnet-version: '5.0.x'
           source-url: https://api.nuget.org/v3/index.json
         env:
-          NUGET_AUTH_TOKEN: ${{secrets.NUGET_KEY}}
+          NUGET_AUTH_TOKEN: ${{secrets.NUGET_API_KEY}}
       - run: dotnet pack -c Release src/Norgerman.Cryptography.Scrypt
-      - run: dotnet nuget push src/Norgerman.Cryptography.Scrypt/bin/Release/*.nupkg --skip-duplicate
+      - run: dotnet nuget push src/Norgerman.Cryptography.Scrypt/bin/Release/*.nupkg --skip-duplicate -k ${NUGET_AUTH_TOKEN}
       
       - name: Setup dotnet for github
         uses: actions/setup-dotnet@v1
