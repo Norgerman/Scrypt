@@ -5,7 +5,7 @@ on:
 name: Publish release
 
 jobs:
-  publish-github:
+  publish:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -19,21 +19,7 @@ jobs:
           NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
       - run: dotnet pack -c Release src/Norgerman.Cryptography.Scrypt
       - run: dotnet nuget push src/Norgerman.Cryptography.Scrypt/bin/Release/*.nupkg --skip-duplicate
-
-  publish-nuget:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@master
-      - name: Setup dotnet
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: '5.0.x'
-          source-url: https://api.nuget.org/v3/index.json
-        env:
-          NUGET_AUTH_TOKEN: ${{secrets.NUGET_API_KEY}}
-      - run: dotnet pack -c Release src/Norgerman.Cryptography.Scrypt
       - shell: bash
         env:
           NUGET_API_KEY: ${{secrets.NUGET_API_KEY}}
-        run: dotnet nuget push src/Norgerman.Cryptography.Scrypt/bin/Release/*.nupkg --skip-duplicate -k ${NUGET_API_KEY}
+        run: dotnet nuget push src/Norgerman.Cryptography.Scrypt/bin/Release/*.nupkg -s https://api.nuget.org/v3/index.json -k ${NUGET_API_KEY} --skip-duplicate
