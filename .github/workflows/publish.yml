@@ -22,7 +22,7 @@ jobs:
 
   publish-nuget:
     runs-on: ubuntu-latest
-    setps:
+    steps:
       - name: Checkout code
         uses: actions/checkout@master
       - name: Setup dotnet
