@@ -32,6 +32,7 @@ jobs:
           source-url: https://api.nuget.org/v3/index.json
         env:
           NUGET_AUTH_TOKEN: ${{secrets.NUGET_API_KEY}}
+      - run: dotnet pack -c Release src/Norgerman.Cryptography.Scrypt
       - shell: bash
         env:
           NUGET_API_KEY: ${{secrets.NUGET_API_KEY}}
