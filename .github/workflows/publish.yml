@@ -1,0 +1,28 @@
+on:
+  release:
+    types: [published]
+
+name: Publish release
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@master
+      - name: Setup dotnet for nuget
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.x'
+        env:
+          NUGET_AUTH_TOKEN: ${{secrets.NUGET_KEY}}
+      - run: dotnet pack -c Release src/Norgerman.Cryptography.Scrypt
+      - run: dotnet nuget push src/Norgerman.Cryptography.Scrypt/bin/Release/*.nupkg --skip-duplicate
+      
+      - name: Setup dotnet for github
+        uses: actions/setup-dotnet@v1
+        with:
+          source-url: https://nuget.pkg.github.com/okawali/index.json
+        env:
+          NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - run: dotnet nuget push src/Norgerman.Cryptography.Scrypt/bin/Release/*.nupkg --skip-duplicate
