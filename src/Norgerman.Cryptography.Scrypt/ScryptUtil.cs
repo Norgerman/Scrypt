@@ -82,6 +82,7 @@ namespace Norgerman.Cryptography.Scrypt
 
             for (int i = 1; i <= blockCount; i++)
             {
+                var blockLength = (i == blockCount ? r : 32);
                 saltBuffer[saltLength + 0] = (byte)(i >> 24);
                 saltBuffer[saltLength + 1] = (byte)(i >> 16);
                 saltBuffer[saltLength + 2] = (byte)(i >> 8);
@@ -100,7 +101,7 @@ namespace Norgerman.Cryptography.Scrypt
                     }
                 }
 
-                T.CopyTo(new Span<byte>(derivedKey, (i - 1) * 32, (i == blockCount ? r : 32)));
+                T.Slice(0, blockLength).CopyTo(new Span<byte>(derivedKey, (i - 1) * 32, blockLength));
             }
 
             return derivedKey;

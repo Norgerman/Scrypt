@@ -2,7 +2,7 @@
   
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <Version>2.2.2</Version>
+    <Version>2.2.3</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <AssemblyName>Norgerman.Cryptography.Scrypt</AssemblyName>
     <PackageId>Norgerman.Cryptography.Scrypt</PackageId>
