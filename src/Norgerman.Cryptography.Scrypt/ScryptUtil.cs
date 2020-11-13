@@ -6,12 +6,24 @@ namespace Norgerman.Cryptography.Scrypt
 {
     public static class ScryptUtil
     {
+
         public static byte[] Scrypt(string password, byte[] salt, int N, int r, int p, int dkLen)
         {
             return Scrypt(Encoding.UTF8.GetBytes(password), salt, N, r, p, dkLen);
         }
 
+
+        public static byte[] Scrypt(string password, Span<byte> salt, int N, int r, int p, int dkLen)
+        {
+            return Scrypt(Encoding.UTF8.GetBytes(password), salt, N, r, p, dkLen);
+        }
+
         public static byte[] Scrypt(byte[] password, byte[] salt, int N, int r, int p, int dkLen)
+        {
+            return Scrypt((Span<byte>)password, salt, N, r, p, dkLen);
+        }
+
+        public static byte[] Scrypt(Span<byte> password, Span<byte> salt, int N, int r, int p, int dkLen)
         {
             if (N < 2 || (N & (N - 1)) != 0) throw new ArgumentException("N must be a power of 2 greater than 1", nameof(N));
 
@@ -24,16 +36,16 @@ namespace Norgerman.Cryptography.Scrypt
             byte[] XY = new byte[256 * r];
             byte[] V = new byte[128 * r * N];
             int i;
-            using (var mac = new HMACSHA256(password))
+            using (var mac = new HMACSHA256(password.ToArray()))
             {
-                B = PBKDF2_SHA256(mac, password, salt, 1, p * 128 * r);
+                B = PBKDF2_SHA256(mac, salt, 1, p * 128 * r);
 
                 for (i = 0; i < p; i++)
                 {
                     Smix(B, i * 128 * r, r, N, V, XY);
                 }
 
-                DK = PBKDF2_SHA256(mac, password, B, 1, dkLen);
+                DK = PBKDF2_SHA256(mac, B, 1, dkLen);
             }
 
             return DK;
@@ -49,15 +61,15 @@ namespace Norgerman.Cryptography.Scrypt
         /// <param name="iterationCount"></param>
         /// <param name="derivedKeyLength"></param>
         /// <returns></returns>
-        private static byte[] PBKDF2_SHA256(HMACSHA256 mac, byte[] password, byte[] salt, long iterationCount, int derivedKeyLength)
+        private static byte[] PBKDF2_SHA256(HMACSHA256 mac, Span<byte> salt, long iterationCount, int derivedKeyLength)
         {
             if (derivedKeyLength > (Math.Pow(2, 32) - 1) * 32)
             {
                 throw new ArgumentException("Requested key length too long");
             }
 
-            var U = new byte[32];
-            var T = new byte[32];
+            Span<byte> U = stackalloc byte[32];
+            Span<byte> T = stackalloc byte[32];
             var saltLength = salt.Length;
             var saltBuffer = new byte[saltLength + 4];
             var derivedKey = new byte[derivedKeyLength];
@@ -65,7 +77,8 @@ namespace Norgerman.Cryptography.Scrypt
             var blockCount = (int)Math.Ceiling((double)derivedKeyLength / 32);
             var r = derivedKeyLength - (blockCount - 1) * 32;
 
-            Buffer.BlockCopy(salt, 0, saltBuffer, 0, saltLength);
+            salt.CopyTo(saltBuffer);
+
 
             for (int i = 1; i <= blockCount; i++)
             {
@@ -75,72 +88,70 @@ namespace Norgerman.Cryptography.Scrypt
                 saltBuffer[saltLength + 3] = (byte)(i);
 
                 mac.Initialize();
-                mac.TransformFinalBlock(saltBuffer, 0, saltBuffer.Length);
-                Buffer.BlockCopy(mac.Hash, 0, U, 0, U.Length);
-                Buffer.BlockCopy(U, 0, T, 0, 32);
+                mac.TryComputeHash(saltBuffer, U, out var len);
+                U.CopyTo(T);
 
                 for (long j = 1; j < iterationCount; j++)
                 {
-                    mac.TransformFinalBlock(U, 0, U.Length);
-                    Buffer.BlockCopy(mac.Hash, 0, U, 0, U.Length);
+                    mac.TryComputeHash(U, U, out len);
                     for (int k = 0; k < 32; k++)
                     {
                         T[k] ^= U[k];
                     }
                 }
 
-                Buffer.BlockCopy(T, 0, derivedKey, (i - 1) * 32, (i == blockCount ? r : 32));
+                T.CopyTo(new Span<byte>(derivedKey, (i - 1) * 32, (i == blockCount ? r : 32)));
             }
 
             return derivedKey;
         }
 
-        private static void Smix(byte[] B, int Bi, int r, int N, byte[] V, byte[] XY)
+        private static void Smix(Span<byte> B, int Bi, int r, int N, Span<byte> V, Span<byte> XY)
         {
             int Xi = 0;
             int Yi = 128 * r;
             int i;
 
-            Buffer.BlockCopy(B, Bi, XY, Xi, 128 * r);
+            B.Slice(Bi, Yi).CopyTo(XY.Slice(Xi, Yi));
 
             for (i = 0; i < N; i++)
             {
-                Buffer.BlockCopy(XY, Xi, V, i * (128 * r), 128 * r);
+                XY.Slice(Xi, Yi).CopyTo(V.Slice(i * Yi, Yi));
                 BlockmixSalsa8(XY, Xi, Yi, r);
             }
 
             for (i = 0; i < N; i++)
             {
-                int j = Integerify(XY, Xi, r) & (N - 1);
-                Blockxor(V, j * (128 * r), XY, Xi, 128 * r);
+                int j = Integerify(XY.Slice(Xi + (2 * r - 1) * 64, 4)) & (N - 1);
+                Blockxor(V.Slice(j * Yi, Yi), XY.Slice(Xi, Yi));
                 BlockmixSalsa8(XY, Xi, Yi, r);
             }
 
-            Buffer.BlockCopy(XY, Xi, B, Bi, 128 * r);
+            XY.Slice(Xi, Yi).CopyTo(B.Slice(Bi, Yi));
         }
 
-        private static void BlockmixSalsa8(byte[] BY, int Bi, int Yi, int r)
+        private static void BlockmixSalsa8(Span<byte> BY, int Bi, int Yi, int r)
         {
-            byte[] X = new byte[64];
+            Span<byte> X = stackalloc byte[64];
             int i;
 
-            Buffer.BlockCopy(BY, Bi + (2 * r - 1) * 64, X, 0, 64);
+            BY.Slice(Bi + (2 * r - 1) * 64, 64).CopyTo(X);
 
             for (i = 0; i < 2 * r; i++)
             {
-                Blockxor(BY, i * 64, X, 0, 64);
+                Blockxor(BY.Slice(i * 64, 64), X);
                 Salsa20_8(X);
-                Buffer.BlockCopy(X, 0, BY, Yi + (i * 64), 64);
+                X.CopyTo(BY.Slice(Yi + (i * 64), 64));
             }
 
             for (i = 0; i < r; i++)
             {
-                Buffer.BlockCopy(BY, Yi + (i * 2) * 64, BY, Bi + (i * 64), 64);
+                BY.Slice(Yi + (i * 2) * 64, 64).CopyTo(BY.Slice(Bi + (i * 64), 64));
             }
 
             for (i = 0; i < r; i++)
             {
-                Buffer.BlockCopy(BY, Yi + (i * 2 + 1) * 64, BY, Bi + (i + r) * 64, 64);
+                BY.Slice(Yi + (i * 2 + 1) * 64, 64).CopyTo(BY.Slice(Bi + (i + r) * 64, 64));
             }
         }
 
@@ -149,7 +160,7 @@ namespace Norgerman.Cryptography.Scrypt
             return (a << b) | (a >> (32 - b));
         }
 
-        private static unsafe void Salsa20_8(byte[] B)
+        private static unsafe void Salsa20_8(Span<byte> B)
         {
             fixed (byte* bptr = B)
             {
@@ -192,27 +203,21 @@ namespace Norgerman.Cryptography.Scrypt
             }
         }
 
-        private static void Blockxor(byte[] S, int Si, byte[] D, int Di, int len)
+        private static void Blockxor(Span<byte> S, Span<byte> D)
         {
-            for (int i = 0; i < len; i++)
+            for (int i = 0; i < S.Length; i++)
             {
-                D[Di + i] ^= S[Si + i];
+                D[i] ^= S[i];
             }
         }
 
-        private static unsafe int Integerify(byte[] B, int Bi, int r)
+        private static unsafe int Integerify(Span<byte> B)
         {
-            int n;
             fixed (byte* bptr = B)
             {
-                Bi += (2 * r - 1) * 64;
-                byte* start = bptr + Bi;
-                int* iptr = (int*)start;
-
-                n = *iptr;
+                int* iptr = (int*)bptr;
+                return *iptr;
             }
-
-            return n;
         }
     }
 }
