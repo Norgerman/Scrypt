@@ -9,7 +9,7 @@ namespace Norgerman.Cryptography.Scrypt
 
         public static byte[] Scrypt(string password, byte[] salt, int N, int r, int p, int dkLen)
         {
-            return Scrypt((Span<byte>)Encoding.UTF8.GetBytes(password), salt, N, r, p, dkLen);
+            return Scrypt((ReadOnlySpan<byte>)Encoding.UTF8.GetBytes(password), salt, N, r, p, dkLen);
         }
 
 
@@ -20,10 +20,10 @@ namespace Norgerman.Cryptography.Scrypt
 
         public static byte[] Scrypt(byte[] password, byte[] salt, int N, int r, int p, int dkLen)
         {
-            return Scrypt((Span<byte>)password, salt, N, r, p, dkLen);
+            return Scrypt((ReadOnlySpan<byte>)password, salt, N, r, p, dkLen);
         }
 
-        public static byte[] Scrypt(Span<byte> password, Span<byte> salt, int N, int r, int p, int dkLen)
+        public static byte[] Scrypt(ReadOnlySpan<byte> password, ReadOnlySpan<byte> salt, int N, int r, int p, int dkLen)
         {
             if (N < 2 || (N & (N - 1)) != 0) throw new ArgumentException("N must be a power of 2 greater than 1", nameof(N));
 
@@ -61,7 +61,7 @@ namespace Norgerman.Cryptography.Scrypt
         /// <param name="iterationCount"></param>
         /// <param name="derivedKeyLength"></param>
         /// <returns></returns>
-        private static byte[] PBKDF2_SHA256(HMACSHA256 mac, Span<byte> salt, long iterationCount, int derivedKeyLength)
+        private static byte[] PBKDF2_SHA256(HMACSHA256 mac, ReadOnlySpan<byte> salt, long iterationCount, int derivedKeyLength)
         {
             if (derivedKeyLength > (Math.Pow(2, 32) - 1) * 32)
             {
