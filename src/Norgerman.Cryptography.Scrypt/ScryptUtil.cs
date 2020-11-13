@@ -13,7 +13,7 @@ namespace Norgerman.Cryptography.Scrypt
         }
 
 
-        public static byte[] Scrypt(string password, Span<byte> salt, int N, int r, int p, int dkLen)
+        public static byte[] Scrypt(string password, ReadOnlySpan<byte> salt, int N, int r, int p, int dkLen)
         {
             return Scrypt(Encoding.UTF8.GetBytes(password), salt, N, r, p, dkLen);
         }
