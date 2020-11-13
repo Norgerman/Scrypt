@@ -204,7 +204,7 @@ namespace Norgerman.Cryptography.Scrypt
             }
         }
 
-        private static void Blockxor(Span<byte> S, Span<byte> D)
+        private static void Blockxor(ReadOnlySpan<byte> S, Span<byte> D)
         {
             for (int i = 0; i < S.Length; i++)
             {
@@ -212,7 +212,7 @@ namespace Norgerman.Cryptography.Scrypt
             }
         }
 
-        private static unsafe int Integerify(Span<byte> B)
+        private static unsafe int Integerify(ReadOnlySpan<byte> B)
         {
             fixed (byte* bptr = B)
             {
