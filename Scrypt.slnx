@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="scrypt.snk" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Norgerman.Cryptography.Scrypt/Norgerman.Cryptography.Scrypt.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/Norgerman.Cryptography.Scrypt.Test/Norgerman.Cryptography.Scrypt.Test.csproj" />
+  </Folder>
+</Solution>
